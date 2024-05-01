@@ -1,10 +1,8 @@
-import Board from "./components/Board";
-import Square from "./components/Square";
+import Game from "./components/Game";
 
 export default function App() {
+  
   return (
-    <>
-      <Board />
-    </>
+    <Game />
   );
 }

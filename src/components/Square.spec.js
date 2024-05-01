@@ -33,6 +33,6 @@ describe('Square', () => {
             userEvent.click(squareButton);
             expect(onSquareClick).toHaveBeenCalledTimes(1);
         });
-        
+
     });
 });

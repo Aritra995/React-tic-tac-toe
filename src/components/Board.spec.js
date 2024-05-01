@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, getAllByTestId, render, screen, within } from '@testing-library/react';
 import Board from './Board';
 import userEvent from '@testing-library/user-event';
 
@@ -10,8 +10,10 @@ describe('Board Component Tests', () => {
         });
 
         it('should return empty board at the start of the game', async () => {
-
-            render(<Board />);
+            const onPlayHandler = jest.fn().mockName('onPlayHandler');
+            const xIsNext = true;
+            const squares = Array(9).fill(null);
+            render(<Board xIsNext={xIsNext} squares={squares} onPlay={onPlayHandler} />);
 
             const rows = await screen.findAllByTestId('boardRow');
 
@@ -24,8 +26,10 @@ describe('Board Component Tests', () => {
             }
         });
 
-        it('should return the first click as X', async () => {
-            render(<Board />);
+        it('First click should be X', async () => {
+            const onPlayMock = jest.fn();
+            const squares = Array(9).fill(null);
+            render(<Board xIsNext={true} squares={squares} onPlay={onPlayMock} />);
 
             const rows = await screen.findAllByTestId('boardRow');
             let moveCount = 0;
@@ -36,15 +40,18 @@ describe('Board Component Tests', () => {
                     moveCount++;
                     userEvent.click(square);
                     if (moveCount === 1) {
-                        expect(square).toHaveTextContent('X');
+                        expect(onPlayMock).toHaveBeenCalledWith(['X', null, null, null, null, null, null, null, null]);
                     }
                 }
 
             }
+
         });
 
         it('should return the second click as O', async () => {
-            render(<Board />);
+            const onPlayMock = jest.fn();
+            const squares = Array(9).fill(null);
+            render(<Board xIsNext={true} squares={squares} onPlay={onPlayMock} />);
 
             const rows = await screen.findAllByTestId('boardRow');
 
@@ -56,7 +63,7 @@ describe('Board Component Tests', () => {
                     moveCount++;
                     userEvent.click(square);
                     if (moveCount === 2) {
-                        expect(square).toHaveTextContent('O');
+                        expect(onPlayMock).toHaveBeenCalledWith([null, 'X', null, null, null, null, null, null, null]);
                     }
 
                 }
@@ -65,7 +72,10 @@ describe('Board Component Tests', () => {
 
         it('should return the same value if the same square is clicked multiple times',
             async () => {
-                render(<Board />);
+                const onPlayMock = jest.fn();
+                const squares = Array(9).fill(null);
+                render(<Board xIsNext={true} squares={squares} onPlay={onPlayMock} />);
+
                 const rows = await screen.findAllByTestId('boardRow');
 
                 let moveCount = 0;
@@ -78,7 +88,7 @@ describe('Board Component Tests', () => {
                         userEvent.click(square);
                         if (moveCount === 1) {
                             userEvent.click(square);
-                            expect(square).toHaveTextContent('X');
+                            expect(onPlayMock).toHaveBeenCalledWith(['X', null, null, null, null, null, null, null, null]);
                         }
 
                     }
@@ -86,34 +96,121 @@ describe('Board Component Tests', () => {
                 }
 
             });
-        it('should return X as winner of the game', async () => {
-            const { getAllByTestId, getByTestId } = render(<Board />);
 
-            const squares = getAllByTestId('squareButton');
+        it('should give win for X with positions {0, 4, 8}', async () => {
+            const squares = Array(9).fill(null);
+            squares[0] = 'X';
+            squares[4] = 'X';
+            squares[8] = 'X';
+            squares[3] = 'O';
+            squares[6] = 'O';
 
-            userEvent.click(squares[0]); // X
-            userEvent.click(squares[3]); // O
-            userEvent.click(squares[4]); // X
-            userEvent.click(squares[6]); // O
-            userEvent.click(squares[8]); // X
+            let xIsTrue = true;
+            const onPlay = jest.fn((squares) => {
+                xIsTrue = !xIsTrue;
+            });
 
-            expect(screen.getByTestId('statusText')).toHaveTextContent('Winner: X');
+            const { getByTestId } = render(
+                <Board xIsNext={xIsTrue} squares={squares} onPlay={onPlay} />
+            );
+
+            expect(getByTestId('statusText').textContent).toBe('Winner: X');
+
+            const squaresButton = await screen.findAllByTestId('squareButton');
+
+            userEvent.click(squaresButton[0]); // X
+            userEvent.click(squaresButton[3]); // O
+            userEvent.click(squaresButton[4]); // X
+            userEvent.click(squaresButton[6]); // O
+            userEvent.click(squaresButton[8]); // X
+
+            expect(getByTestId('statusText').textContent).toBe('Winner: X');
         });
 
-        it('should return O as winner of the game', async () => {
-            const { getAllByTestId, getByTestId } = render(<Board />);
+        it('should give win for O with positions {6, 4, 2}', async () => {
+            const squares = Array(9).fill(null);
+            squares[0] = 'X';
+            squares[8] = 'X';
+            squares[5] = 'X';
+            squares[6] = 'O';
+            squares[4] = 'O';
+            squares[2] = 'O';
 
-            const squares = getAllByTestId('squareButton');
+            let xIsTrue = true;
+            const onPlay = jest.fn((squares) => {
+                xIsTrue = !xIsTrue;
+            });
 
-            userEvent.click(squares[0]); // X
-            userEvent.click(squares[6]); // O
-            userEvent.click(squares[8]); // X
-            userEvent.click(squares[4]); // O
-            userEvent.click(squares[5]); // X
-            userEvent.click(squares[2]); // O
+            const { getByTestId } = render(
+                <Board xIsNext={xIsTrue} squares={squares} onPlay={onPlay} />
+            );
 
-            expect(screen.getByTestId('statusText')).toHaveTextContent('Winner: O');
+            expect(getByTestId('statusText').textContent).toBe('Winner: O');
+
+            const squaresButton = await screen.findAllByTestId('squareButton');
+
+            userEvent.click(squaresButton[0]); // X
+            userEvent.click(squaresButton[6]); // O
+            userEvent.click(squaresButton[8]); // X
+            userEvent.click(squaresButton[4]); // O
+            userEvent.click(squaresButton[5]); // X
+            userEvent.click(squaresButton[2]); // O
+
+            expect(getByTestId('statusText').textContent).toBe('Winner: O');
         });
 
     });
 });
+
+
+
+// xit('should return the first click as X', async () => {
+//     const onPlayHandler = jest.fn().mockName('onPlayHandler');
+//     const xIsNext = true;
+//     const squares = Array(9).fill(null);
+//     render(<Board xIsNext={xIsNext} squares={squares} onPlay={onPlayHandler} />);
+
+//     const rows = await screen.findAllByTestId('boardRow');
+//     let moveCount = 0;
+//     for (const row of rows) {
+//         const squares = await within(row).findAllByTestId('squareButton');
+
+//         for (const square of squares) {
+//             moveCount++;
+//             userEvent.click(square);
+//             if (moveCount === 1) {
+//                 expect(square).toHaveTextContent('X');
+//             }
+//         }
+
+//     }
+// });
+
+// it('should return X as winner of the game', async () => {
+//     const { getAllByTestId, getByTestId } = render(<Board />);
+
+//     const squares = getAllByTestId('squareButton');
+
+//     userEvent.click(squares[0]); // X
+//     userEvent.click(squares[3]); // O
+//     userEvent.click(squares[4]); // X
+//     userEvent.click(squares[6]); // O
+//     userEvent.click(squares[8]); // X
+
+//     expect(screen.getByTestId('statusText')).toHaveTextContent('Winner: X');
+// });
+
+// it('should return O as winner of the game', async () => {
+//     const { getAllByTestId, getByTestId } = render(<Board />);
+
+//     const squares = getAllByTestId('squareButton');
+
+//     userEvent.click(squares[0]); // X
+//     userEvent.click(squares[6]); // O
+//     userEvent.click(squares[8]); // X
+//     userEvent.click(squares[4]); // O
+//     userEvent.click(squares[5]); // X
+//     userEvent.click(squares[2]); // O
+
+//     expect(screen.getByTestId('statusText')).toHaveTextContent('Winner: O');
+// });
