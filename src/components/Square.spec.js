@@ -2,28 +2,37 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Square from './Square';
 
-describe('<Square />', () => {
-    describe('clicking the square button', () => {
+describe('Square', () => {
+    //AAA 
+    /*
+    Arrange
+    Act
+    Assert
+    */
 
-        async function emptySquare(){
-            render(<Square />);
-        }
-        async function clickSquare() {
-            render(<Square />);
+    describe('Square Component', () => {
+        afterEach( () => {
+            jest.clearAllMocks();
+        } );
 
-            await userEvent.click(
-                screen.getByTestId('squareButton')
-            );
-        }
 
-        it('initial state of square should be empty', async () => {
-            await emptySquare();
-            expect(screen.getByTestId('squareButton')).toHaveTextContent('');
+        it('should render X when value passed is X', () => {
+            const value = 'X';
+            const { getByTestId } = render(<Square value={value} />);
+            const squareButton = getByTestId('squareButton');
+
+            expect(squareButton).toBeInTheDocument();
+            expect(squareButton).toHaveTextContent(value);
         });
 
-        it('on click should show X', async () => {
-            await clickSquare();
-            expect(screen.getByTestId('squareButton')).toHaveTextContent('X');
+        it('should call onSquareClick function when square component is clicked', () => {
+            const onSquareClick = jest.fn();
+            const { getByTestId } = render(<Square onSquareClick={onSquareClick} />);
+            const squareButton = getByTestId('squareButton');
+
+            userEvent.click(squareButton);
+            expect(onSquareClick).toHaveBeenCalledTimes(1);
         });
+        
     });
 });
