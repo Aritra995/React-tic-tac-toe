@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Board from "./Board";
 
-function Game() {
+const Game = () => {
 
     const [history, setHistory] = useState([Array(9).fill(null)]);
     const [currentMove, setCurrentMove] = useState(0);

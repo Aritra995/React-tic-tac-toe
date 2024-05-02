@@ -1,5 +1,5 @@
 
-function Square({value,onSquareClick}) {
+const Square = ({value,onSquareClick}) => {
     
     return (
         <button className="square" data-testid="squareButton" onClick={onSquareClick} >{value}</button>

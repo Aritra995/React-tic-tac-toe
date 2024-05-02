@@ -1,8 +1,10 @@
 import Game from "./components/Game";
 
-export default function App() {
+const App = () => {
   
   return (
     <Game />
   );
 }
+
+export default App;

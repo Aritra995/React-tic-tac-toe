@@ -1,6 +1,6 @@
 import Square from "./Square";
 
-function Board({xIsNext, squares, onPlay}) {
+const Board = ({xIsNext, squares, onPlay}) => {
 
     const handleClick = (i) => {
         if (squares[i] || calculateWinner(squares)) {
