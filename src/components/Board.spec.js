@@ -1,4 +1,4 @@
-import { fireEvent, getAllByTestId, render, screen, within } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import Board from './Board';
 import userEvent from '@testing-library/user-event';
 
@@ -162,55 +162,3 @@ describe('Board Component Tests', () => {
     });
 });
 
-
-
-// xit('should return the first click as X', async () => {
-//     const onPlayHandler = jest.fn().mockName('onPlayHandler');
-//     const xIsNext = true;
-//     const squares = Array(9).fill(null);
-//     render(<Board xIsNext={xIsNext} squares={squares} onPlay={onPlayHandler} />);
-
-//     const rows = await screen.findAllByTestId('boardRow');
-//     let moveCount = 0;
-//     for (const row of rows) {
-//         const squares = await within(row).findAllByTestId('squareButton');
-
-//         for (const square of squares) {
-//             moveCount++;
-//             userEvent.click(square);
-//             if (moveCount === 1) {
-//                 expect(square).toHaveTextContent('X');
-//             }
-//         }
-
-//     }
-// });
-
-// it('should return X as winner of the game', async () => {
-//     const { getAllByTestId, getByTestId } = render(<Board />);
-
-//     const squares = getAllByTestId('squareButton');
-
-//     userEvent.click(squares[0]); // X
-//     userEvent.click(squares[3]); // O
-//     userEvent.click(squares[4]); // X
-//     userEvent.click(squares[6]); // O
-//     userEvent.click(squares[8]); // X
-
-//     expect(screen.getByTestId('statusText')).toHaveTextContent('Winner: X');
-// });
-
-// it('should return O as winner of the game', async () => {
-//     const { getAllByTestId, getByTestId } = render(<Board />);
-
-//     const squares = getAllByTestId('squareButton');
-
-//     userEvent.click(squares[0]); // X
-//     userEvent.click(squares[6]); // O
-//     userEvent.click(squares[8]); // X
-//     userEvent.click(squares[4]); // O
-//     userEvent.click(squares[5]); // X
-//     userEvent.click(squares[2]); // O
-
-//     expect(screen.getByTestId('statusText')).toHaveTextContent('Winner: O');
-// });
